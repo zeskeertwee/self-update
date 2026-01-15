@@ -1,15 +1,20 @@
-#![feature(never_type)]
+#![cfg_attr(feature = "never", feature(never_type))]
 
 use std::io::{
     Write
 };
-use std::fs::{self, File, Permissions};
+use std::fs::{self, File};
 use std::env;
 use std::ffi::{CString, NulError};
 use log::info;
 use nix::unistd::{execve, unlink};
 
-pub fn update_self_exe(new_binary: &[u8]) -> anyhow::Result<!> {
+#[cfg(feature = "never")]
+type ReturnType = !;
+#[cfg(not(feature = "never"))]
+type ReturnType = ();
+
+pub fn update_self_exe(new_binary: &[u8]) -> anyhow::Result<ReturnType> {
     let self_path = env::current_exe()?.canonicalize()?;
     let perms = fs::metadata(&self_path)?.permissions();
     log::info!("Unlinking original executable @ '{}'", self_path.to_string_lossy());
