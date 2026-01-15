@@ -9,3 +9,6 @@ edition = "2021"
 anyhow = "1.0.70"
 nix = "0.26.2"
 log = "0.4.17"
+
+[features]
+never = []
